@@ -1,9 +1,11 @@
+CC=gcc
+
 TESTS_SOURCES=$(wildcard tests/test_*.c)
 TESTS=$(TESTS_SOURCES:.c=)
 
 CPPFLAGS=-g -ggdb -O0 -std=c11 -Wall -Werror -I.
 CFLAGS=-fPIC -ggdb -I. 
-LDFLAGS= -lm
+LDLIBS= -lm
 
 PATH := /opt/local/bin:$(PATH)
 
@@ -41,10 +43,10 @@ scan.h: scan.l
 	flex scan.l
 
 parse.c: parse.y scan.h
-	/opt/local/bin/bison parse.y
+	/usr/bin/bison parse.y
 
 parse.h: parse.y
-	/opt/local/bin/bison parse.y
+	/usr/bin/bison parse.y
 
 libautomate.a: libautomate.a(automate.o table.o ensemble.o avl.o fifo.o outils.o scan.o parse.o rationnel.o)
 
