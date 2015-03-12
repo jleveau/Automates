@@ -281,7 +281,39 @@ int rationnel_to_dot_aux(Rationnel *rat, FILE *output, int pere, int noeud_coura
 
 void numeroter_rationnel(Rationnel *rat)
 {
-   A_FAIRE;
+    if (rat->etiquette==EPSILON)
+		return;
+	else if (rat->etiquette==LETTRE){
+		if (rat->pere==NULL){
+			rat->position_min=1;
+			rat->position_max=1;
+		}
+		else {
+			rat->position_min=rat->pere->position_min;
+			rat->position_max=rat->pere->position_max;
+		}
+		return;
+	}
+	else if (rat->etiquette==STAR){
+		rat->position_min=rat->pere->position_min;
+		rat->position_max=rat->pere->position_max;
+		numeroter_rationnel(rat->gauche);
+		return;
+	}
+	else if (rat->etiquette==UNION){
+		rat->position_min=rat->pere->position_min;
+		rat->position_max=rat->pere->position_max+1;
+		numeroter_rationnel(rat->gauche);
+		numeroter_rationnel(rat->droit);
+		return;
+	}
+	else if (rat->etiquette==CONCAT){
+		rat->position_min=rat->pere->position_min;
+		rat->position_max=rat->pere->position_max+1;
+		numeroter_rationnel(rat->gauche);
+		numeroter_rationnel(rat->droit);
+		return;
+	}
 }
 
 bool contient_mot_vide(Rationnel *rat)
@@ -358,4 +390,3 @@ Rationnel *Arden(Automate *automate)
 {
    A_FAIRE_RETURN(NULL);
 }
-

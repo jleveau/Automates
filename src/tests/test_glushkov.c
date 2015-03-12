@@ -29,6 +29,7 @@
 int test_glushkov(){
 	int result = 1;
     {
+
        Rationnel * rat;
        rat = expression_to_rationnel("a.b");
        numeroter_rationnel(rat);
