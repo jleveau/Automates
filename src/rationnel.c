@@ -311,6 +311,7 @@ int rec_numeroter_rationnel(Rationnel* rat){
 
 void numeroter_rationnel(Rationnel *rat)
 {
+	set_position_min(rat,1);
 	rec_numeroter_rationnel(rat);
 	return;
 }
@@ -344,7 +345,7 @@ Ensemble* premier_rec(Rationnel* rat, Ensemble* ens){
 		case EPSILON :
 			break;
 		case LETTRE :
-			ajouter_element(ens,rat->lettre);
+			ajouter_element(ens,get_position_min(rat));
 			break;
 		case STAR :
 			ajouter_elements(ens,premier_rec(fils(rat),ens));
@@ -374,7 +375,7 @@ Ensemble* dernier_rec(Rationnel* rat, Ensemble* ens){
 		case EPSILON :
 			break;
 		case LETTRE :
-			ajouter_element(ens,rat->lettre);
+			ajouter_element(ens,get_position_min(rat));
 			break;
 		case STAR :
 			ajouter_elements(ens,dernier_rec(fils(rat),ens));
@@ -399,9 +400,35 @@ Ensemble *dernier(Rationnel *rat)
    return ens;
 }
 
+Ensemble* suivant_rec(Rationnel* rat, Ensemble* ens,int pos){
+	switch (get_etiquette(rat)){
+		case EPSILON :
+		case LETTRE :
+			break;
+		case STAR :
+			if (est_dans_l_ensemble(dernier(rat),pos))
+				ajouter_elements(ens,premier(rat));
+			ajouter_elements(ens,suivant_rec(fils(rat),ens,pos));
+			break;
+		case UNION :
+			ajouter_elements(ens,suivant_rec(fils_gauche(rat),ens,pos));
+			ajouter_elements(ens,suivant_rec(fils_droit(rat),ens,pos));
+			break;
+		case CONCAT :
+			if (est_dans_l_ensemble(dernier(fils_gauche(rat)),pos))
+				ajouter_elements(ens,premier(fils_droit(rat)));			
+			ajouter_elements(ens,suivant_rec(fils_droit(rat),ens,pos));
+			ajouter_elements(ens,suivant_rec(fils_gauche(rat),ens,pos));		
+			break;
+	}
+	return ens;
+}
+
 Ensemble *suivant(Rationnel *rat, int position)
 {
-   A_FAIRE_RETURN(NULL);
+   Ensemble* ens = creer_ensemble(NULL,NULL,NULL);
+   suivant_rec(rat,ens,position);
+   return ens;
 }
 
 Automate *Glushkov(Rationnel *rat)
