@@ -23,6 +23,7 @@
 #ifndef __AUTOMATE_H__
 #define __AUTOMATE_H__
 
+
 #include "ensemble.h"
 
 /**

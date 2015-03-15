@@ -1,4 +1,0 @@
-test_automate_miroir: automate.c:115: liberer_automate: Assertion `automate' failed.
-A FAIRE ! - ligne : 643, fichier : automate.c, fonction : miroir( )
-[31mEchec du test test_automate_miroir() -- ligne : 60, fichier : tests/test_automate_miroir.c[0m
-/bin/sh : ligne 1 : 25061 Abandon                 /bin/bash -c "$i"

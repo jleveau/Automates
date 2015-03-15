@@ -330,7 +330,7 @@ bool contient_mot_vide(Rationnel *rat)
 			vide= true;
 			break;
 		case UNION :
-			vide= contient_mot_vide(fils_gauche(rat)) && contient_mot_vide(fils_droit(rat));
+			vide= contient_mot_vide(fils_gauche(rat)) || contient_mot_vide(fils_droit(rat));
 			break;
 		case CONCAT :
 			vide= contient_mot_vide(fils_gauche(rat)) && contient_mot_vide(fils_droit(rat));
@@ -369,9 +369,34 @@ Ensemble *premier(Rationnel *rat)
    return ens;
 }
 
+Ensemble* dernier_rec(Rationnel* rat, Ensemble* ens){
+		switch (get_etiquette(rat)){
+		case EPSILON :
+			break;
+		case LETTRE :
+			ajouter_element(ens,rat->lettre);
+			break;
+		case STAR :
+			ajouter_elements(ens,dernier_rec(fils(rat),ens));
+			break;
+		case UNION :
+			ajouter_elements(ens,dernier_rec(fils_gauche(rat),ens));
+			ajouter_elements(ens,dernier_rec(fils_droit(rat),ens));
+			break;
+		case CONCAT :
+			ajouter_elements(ens,dernier_rec(fils_droit(rat),ens));
+			if (contient_mot_vide(fils_droit(rat)))
+				ajouter_elements(ens,dernier_rec(fils_gauche(rat),ens));		
+			break;
+	}
+	return ens;
+}
+
 Ensemble *dernier(Rationnel *rat)
 {
-   A_FAIRE_RETURN(NULL);
+   Ensemble* ens = creer_ensemble(NULL,NULL,NULL);
+   dernier_rec(rat,ens);
+   return ens;
 }
 
 Ensemble *suivant(Rationnel *rat, int position)

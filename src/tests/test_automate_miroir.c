@@ -18,10 +18,8 @@
  *    along with this Library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "automate.h"
 #include "outils.h"
-
 
 int test_automate_miroir(){
 
