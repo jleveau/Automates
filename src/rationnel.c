@@ -318,7 +318,25 @@ void numeroter_rationnel(Rationnel *rat)
 
 bool contient_mot_vide(Rationnel *rat)
 {
-   A_FAIRE_RETURN(true);
+	bool vide;
+	switch (get_etiquette(rat)){
+		case EPSILON :
+			vide= true;
+			break;
+		case LETTRE :
+			vide= false;
+			break;
+		case STAR :
+			vide= true;
+			break;
+		case UNION :
+			vide= contient_mot_vide(fils_gauche(rat)) && contient_mot_vide(fils_droit(rat));
+			break;
+		case CONCAT :
+			vide= contient_mot_vide(fils_gauche(rat)) && contient_mot_vide(fils_droit(rat));
+			break;
+	}
+	return vide;
 }
 
 Ensemble *premier(Rationnel *rat)

@@ -744,7 +744,7 @@ int ajouter_ensemble(
 	if( iterateur_est_vide( it ) ){
 		add_table( ensemble_to_id, (intptr_t) ens, next_id );
 		add_table( id_to_ensemble, next_id, (intptr_t) ens );
-		ajouter_fifo( f, (intptr_t) ens );
+		ajouter_fifo( f, (intptr_t) ens  );
 		ajouter_etat( aut, next_id );
 		return next_id+1;
 	}else{
