@@ -108,27 +108,28 @@ char get_lettre(Rationnel* rat)
 
 int get_position_min(Rationnel* rat)
 {
-   assert (get_etiquette(rat) == LETTRE);
+  // assert (get_etiquette(rat) == LETTRE);
    return rat->position_min;
 }
 
 int get_position_max(Rationnel* rat)
 {
-   assert (get_etiquette(rat) == LETTRE);
+   //assert (get_etiquette(rat) == LETTRE);
    return rat->position_max;
 }
 
 void set_position_min(Rationnel* rat, int valeur)
 {
-   assert (get_etiquette(rat) == LETTRE);
+  // assert (get_etiquette(rat) == LETTRE);
    rat->position_min = valeur;
    return;
 }
 
 void set_position_max(Rationnel* rat, int valeur)
 {
-   assert (get_etiquette(rat) == LETTRE);
-   rat->position_max = valeur;
+  // assert (get_etiquette(rat) == LETTRE);
+  
+rat->position_max = valeur;
    return;
 }
 
@@ -279,42 +280,41 @@ int rationnel_to_dot_aux(Rationnel *rat, FILE *output, int pere, int noeud_coura
    return noeud_courant;
 }
 
+int rec_numeroter_rationnel(Rationnel* rat){
+	int max;
+	switch (get_etiquette(rat)){
+		case EPSILON :
+			set_position_max(rat,get_position_min(rat));
+			break;
+		case LETTRE :
+			set_position_max(rat,get_position_min(rat));
+			break;
+		case STAR :
+			set_position_min(fils(rat),get_position_min(rat));
+			set_position_max(rat,rec_numeroter_rationnel(fils(rat)));
+			break;
+		case UNION :
+			set_position_min(fils_gauche(rat),get_position_min(rat));
+			max=rec_numeroter_rationnel(fils_gauche(rat));
+			set_position_min(fils_droit(rat),max+1);
+			set_position_max(rat,rec_numeroter_rationnel(fils_droit(rat)));
+			break;
+		case CONCAT :
+			set_position_min(fils_gauche(rat),get_position_min(rat));
+			max=rec_numeroter_rationnel(fils_gauche(rat));
+			set_position_min(fils_droit(rat),max+1);
+			set_position_max(rat,rec_numeroter_rationnel(fils_droit(rat)));
+			break;
+	}
+	return get_position_max(rat);
+}
+
 void numeroter_rationnel(Rationnel *rat)
 {
-    if (rat->etiquette==EPSILON)
-		return;
-	else if (rat->etiquette==LETTRE){
-		if (rat->pere==NULL){
-			rat->position_min=1;
-			rat->position_max=1;
-		}
-		else {
-			rat->position_min=rat->pere->position_min;
-			rat->position_max=rat->pere->position_max;
-		}
-		return;
-	}
-	else if (rat->etiquette==STAR){
-		rat->position_min=rat->pere->position_min;
-		rat->position_max=rat->pere->position_max;
-		numeroter_rationnel(rat->gauche);
-		return;
-	}
-	else if (rat->etiquette==UNION){
-		rat->position_min=rat->pere->position_min;
-		rat->position_max=rat->pere->position_max+1;
-		numeroter_rationnel(rat->gauche);
-		numeroter_rationnel(rat->droit);
-		return;
-	}
-	else if (rat->etiquette==CONCAT){
-		rat->position_min=rat->pere->position_min;
-		rat->position_max=rat->pere->position_max+1;
-		numeroter_rationnel(rat->gauche);
-		numeroter_rationnel(rat->droit);
-		return;
-	}
+	rec_numeroter_rationnel(rat);
+	return;
 }
+
 
 bool contient_mot_vide(Rationnel *rat)
 {

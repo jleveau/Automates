@@ -146,7 +146,7 @@ void action_print_ensemble( const intptr_t element, void* data ){
 	if( info->print_element ){
 		info->print_element( element );
 	}else{
-		printf( "%ld", element );
+		printf( "%ld", ( long int ) element );
 	}
 	printf( ", " );
 }

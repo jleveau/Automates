@@ -213,13 +213,13 @@ void print_association( const intptr_t cle, intptr_t valeur, void* data  ){
 	if( d->print_cle ){
 		d->print_cle( cle );
 	}else{
-		printf("%ld", cle );
+		printf("%ld", ( long int ) cle );
 	}
 	printf(" --> ");
 	if( d->print_valeur ){
 		d->print_valeur( valeur );
 	}else{
-		printf("%ld", valeur );
+		printf("%ld", ( long int )valeur );
 	}
 	printf(", ");
 }

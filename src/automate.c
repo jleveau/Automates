@@ -17,7 +17,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this Library.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include "math.h"
 #include "automate.h"
 #include "table.h"
 #include "ensemble.h"
@@ -32,7 +32,7 @@
 
 #include <assert.h>
 
-#include <math.h>
+
 
 void action_get_max_etat( const intptr_t element, void* data ){
 	int * max = (int*) data;
