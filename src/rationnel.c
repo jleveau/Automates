@@ -339,9 +339,34 @@ bool contient_mot_vide(Rationnel *rat)
 	return vide;
 }
 
+Ensemble* premier_rec(Rationnel* rat, Ensemble* ens){
+		switch (get_etiquette(rat)){
+		case EPSILON :
+			break;
+		case LETTRE :
+			ajouter_element(ens,rat->lettre);
+			break;
+		case STAR :
+			ajouter_elements(ens,premier_rec(fils(rat),ens));
+			break;
+		case UNION :
+			ajouter_elements(ens,premier_rec(fils_gauche(rat),ens));
+			ajouter_elements(ens,premier_rec(fils_droit(rat),ens));
+			break;
+		case CONCAT :
+			ajouter_elements(ens,premier_rec(fils_gauche(rat),ens));
+			if (contient_mot_vide(fils_gauche(rat)))
+				ajouter_elements(ens,premier_rec(fils_droit(rat),ens));
+			break;
+	}
+	return ens;
+}
+
 Ensemble *premier(Rationnel *rat)
 {
-   A_FAIRE_RETURN(NULL);
+   Ensemble* ens = creer_ensemble(NULL,NULL,NULL);
+   premier_rec(rat,ens);
+   return ens;
 }
 
 Ensemble *dernier(Rationnel *rat)
