@@ -431,9 +431,77 @@ Ensemble *suivant(Rationnel *rat, int position)
    return ens;
 }
 
+void rec_pos_to_char(Rationnel* rat,char* tab){
+	switch (get_etiquette(rat)){
+		case EPSILON :
+		case LETTRE :
+			tab[get_position_min(rat)]=get_lettre(rat);
+			return;
+			break;
+		case STAR :
+			rec_pos_to_char(fils(rat),tab);
+			return;
+			break;
+		case UNION :
+			rec_pos_to_char(fils_gauche(rat),tab);
+			rec_pos_to_char(fils_droit(rat),tab);
+			return;
+			break;
+		case CONCAT :
+			rec_pos_to_char(fils_gauche(rat),tab);
+			rec_pos_to_char(fils_droit(rat),tab);
+			return;
+			break;
+	}
+	return;
+}
+
+char* pos_to_char(Rationnel* rat){
+
+	char* tab=malloc(get_position_max(rat)*sizeof(char));
+	rec_pos_to_char(rat,tab);
+	return tab;
+}
+
 Automate *Glushkov(Rationnel *rat)
 {
-   A_FAIRE_RETURN(NULL);
+
+   Automate* aut=creer_automate();
+
+   char c;
+   int dest;
+   char* lettres=pos_to_char(rat);
+
+   ajouter_etat_initial(aut,0);  //On crée un état initial 0 (epsilon)
+   if (contient_mot_vide(rat)){
+		ajouter_etat_final(aut,0);
+   }
+   
+   Ensemble_iterateur it_premier=premier_iterateur_ensemble(premier(rat)); //On crée des transition entre l'état 0 et les premiers.
+   while (!iterateur_ensemble_est_vide(it_premier)){
+	    c=lettres[get_element(it_premier)];  //On recupere la lettre associée a l'état
+	    dest=get_element(it_premier);     //On va chercher la destination de la transition (le sommet de premier)
+		ajouter_transition(aut,0,c,dest);     // On crée la transition entre l'état 0 et le sommet actuel dans premier
+		it_premier=iterateur_suivant_ensemble(it_premier);
+   }
+   
+   
+   Ensemble_iterateur it_dernier=premier_iterateur_ensemble(dernier(rat));  // les elements de dernier sont les etats finaux
+   while (!iterateur_ensemble_est_vide(it_dernier)){
+		ajouter_etat_final(aut,get_element(it_dernier));
+		it_dernier=iterateur_suivant_ensemble(it_dernier);
+   }
+   
+   for (int i=1;i<=get_position_max(rat);i++){ //On crée toutes les autres transitions
+	    Ensemble_iterateur it_transition=premier_iterateur_ensemble(suivant(rat,i)); //On parcours l'ensemble des transitions
+	    while (!iterateur_ensemble_est_vide(it_transition)){
+			c=lettres[get_element(it_transition)]; //La lettre de la destionation
+			dest=get_element(it_transition);  // position de fin
+			ajouter_transition(aut,i,c,dest); // crée la transition
+			it_transition=iterateur_suivant_ensemble(it_transition);
+		}
+	}
+	return aut;
 }
 
 bool meme_langage (const char *expr1, const char* expr2)

@@ -52,7 +52,6 @@ int test_glushkov(){
        rat = expression_to_rationnel("(a.a)*.(b*.c)*");
        numeroter_rationnel(rat);
        Automate * automate = Glushkov(rat);
-       
        TEST(
           1
           && ! le_mot_est_reconnu(automate, "ab")
@@ -64,7 +63,7 @@ int test_glushkov(){
           && ! le_mot_est_reconnu(automate, "aaaabccbbb")
           , result);
     }
-
+	
     {
        Rationnel * rat;
        rat = expression_to_rationnel("(a.a)*.(b+c*).a.b*");
