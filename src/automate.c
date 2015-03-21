@@ -639,8 +639,30 @@ Automate *automate_accessible( const Automate * automate ){
 	return res;
 }
 
+
 Automate *miroir( const Automate * automate){
-   A_FAIRE_RETURN(NULL);
+   Automate * aut = creer_automate();
+   ajouter_elements(aut->finaux,automate->initiaux);
+   ajouter_elements(aut->initiaux,automate->finaux);
+   ajouter_elements(aut->alphabet,automate->alphabet);
+   ajouter_elements(aut->etats,automate->etats);
+
+   Ensemble_iterateur it_etats=premier_iterateur_ensemble(automate->etats);
+   while (!iterateur_est_vide(it_etats)){
+		Ensemble_iterateur it_lettres=premier_iterateur_ensemble(aut->alphabet);
+		while (!iterateur_est_vide(it_lettres)){
+			const Ensemble* v=voisins(automate,get_element(it_etats),get_element(it_lettres));
+			Ensemble_iterateur it_fin=premier_iterateur_ensemble(v);
+			while (!iterateur_est_vide(it_fin)){
+				ajouter_transition(aut,get_element(it_fin),get_element(it_lettres),get_element(it_etats));
+				it_fin=iterateur_suivant_ensemble(it_fin);
+			}
+			it_lettres=iterateur_suivant_ensemble(it_lettres);
+		}
+	   it_etats=iterateur_suivant_ensemble(it_etats);
+	}
+   return aut;
+
 }
 
 void action_nombre_de_transitions(

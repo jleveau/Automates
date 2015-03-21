@@ -40,10 +40,9 @@ int test_automate_miroir(){
 		ajouter_etat_final( automate, 3);
 		ajouter_etat_final( automate, 8);
 		ajouter_etat_final( automate, 9);
-
+		
 
 		Automate * mir = miroir( automate );
-
 		TEST(
 			1
 			&& mir
