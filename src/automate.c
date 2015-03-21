@@ -845,6 +845,20 @@ Automate * creer_automate_deterministe( const Automate* automate ){
 }
 
 Automate * creer_automate_minimal( const Automate* automate ){
-   A_FAIRE_RETURN(NULL);   
+  Automate* aut1;
+  Automate* aut2;
+  Automate* aut3;
+  Automate* aut4;
+  Automate* aut5;
+  aut1=creer_automate_deterministe(automate);
+  aut2=miroir(aut1);
+  aut3=creer_automate_deterministe(aut2);
+  aut4=miroir(aut3);
+  aut5=creer_automate_deterministe(aut4);
+  liberer_automate(aut1);
+  liberer_automate(aut2);
+  liberer_automate(aut3);
+  liberer_automate(aut4);
+  return aut5;
 }
 
