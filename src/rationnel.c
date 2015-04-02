@@ -311,7 +311,7 @@ int rec_numeroter_rationnel(Rationnel* rat){
 
 void numeroter_rationnel(Rationnel *rat)
 {
-	set_position_min(rat,1);
+	set_position_min(rat,1); //Les rationnels doivent etre numerotés de 1 a n.
 	rec_numeroter_rationnel(rat);
 	return;
 }
@@ -431,6 +431,11 @@ Ensemble *suivant(Rationnel *rat, int position)
    return ens;
 }
 
+/*
+ * rempli un tableau de taille position_max du rationnel passé en parametre.
+ * le tableau contient les lettres de l'expression rationnel, telle que
+ * chaque lettre est rangée a l'indice position_min du noeud contenant la lettre
+ */
 void rec_pos_to_char(Rationnel* rat,char* tab){
 	switch (get_etiquette(rat)){
 		case EPSILON :
@@ -456,6 +461,7 @@ void rec_pos_to_char(Rationnel* rat,char* tab){
 	return;
 }
 
+/* retourne un tableau contenant les lettre de l'expression rationnelle, rangée a l'indice de leur position dans l'expression*/
 char* pos_to_char(Rationnel* rat){
 
 	char* tab=malloc(get_position_max(rat)*sizeof(char));
