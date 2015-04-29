@@ -512,7 +512,7 @@ Automate *Glushkov(Rationnel *rat)
 
 bool meme_langage (const char *expr1, const char* expr2)
 {
-   // Transformation des expressions en automates
+ /*  // Transformation des expressions en automates
    Rationnel *rat1 = expression_to_rationnel(expr1);
    Rationnel *rat2 = expression_to_rationnel(expr2);
    Automate *aut1 = Glushkov(rat1);
@@ -539,12 +539,40 @@ comparer_ensemble(aut1->initiaux, aut2->initiaux)!=0 || comparer_ensemble(aut1->
 	 break;
       }
    }
-   return meme;
+   return meme;*/
+   return NULL;
 }
 
 Systeme systeme(Automate *automate)
 {
-   A_FAIRE_RETURN(NULL);
+   size_t n=taille_ensemble(automate->etats);
+   Systeme sys=malloc(sizeof(*sys)*n); //Nombre d'etats de l'automate
+   for (int i=0;i<n;i++){
+	   sys[i]=malloc(sizeof(*sys[i])*n+1);
+	   for (int j=0;j<n+1;j++) // +1 pour epsilon
+		   sys[i][j]=NULL;
+   }
+   Table_iterateur it = premier_iterateur_table(automate->transitions);
+   while (!iterateur_est_vide(it)){
+		Cle cle=*(Cle*)get_cle(it);
+		int origine=(int)cle.origine;
+		char trans=cle.lettre;
+		const Ensemble* arrive=(Ensemble*) get_valeur( it );
+		
+		Ensemble_iterateur arr_it=premier_iterateur_ensemble(arrive);
+		while (!iterateur_est_vide(arr_it)){
+			int dest=get_element(arr_it);
+			sys[dest][origine]=Lettre(trans);
+			arr_it=iterateur_suivant_ensemble(arr_it);
+		}
+		it=iterateur_suivant_table(it);
+   }
+   Ensemble_iterateur it2=premier_iterateur_ensemble(automate->initiaux); //On ajoute les epsilon
+   while (!iterateur_est_vide(it2)){
+		sys[get_element(it2)][n]=Epsilon();	
+		it2=iterateur_suivant_ensemble(it2);
+	}
+   return sys;
 }
 
 void print_ligne(Rationnel **ligne, int n)
@@ -569,12 +597,32 @@ void print_systeme(Systeme systeme, int n)
 
 Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 {
-   A_FAIRE_RETURN(NULL);
-}
+   Rationnel* rat=ligne[numero_variable];
+   if (rat){
+	   rat=Star(rat);
+	   for (int i=0;i<n+1;i++){
+		   if (i==numero_variable)
+				ligne[i]=NULL;
+			else if (ligne[i] || i==n){
+				ligne[i]=Union(rat,ligne[i]);
+			}
+	   }
+	}
+   return ligne;
+} 
 
 Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **valeur_variable, int n)
 {
-   A_FAIRE_RETURN(NULL);
+   Rationnel* rat=ligne[numero_variable];
+   for (int i=0;i<n;i++){
+	   if (i==numero_variable){
+			ligne[n]=Union(ligne[n],Concat(ligne[i],valeur_variable[n]));
+	   }
+	   else if (valeur_variable[i]){
+				ligne[i]=Union(Concat(rat,valeur_variable[i]),ligne[i]); 
+		}
+   }
+   return ligne;
 }
 
 Systeme resoudre_systeme(Systeme systeme, int n)
