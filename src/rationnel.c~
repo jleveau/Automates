@@ -532,7 +532,7 @@ comparer_ensemble(aut1->initiaux, aut2->initiaux)!=0 || comparer_ensemble(aut1->
       if(iterateur_est_vide(it2=trouver_table(aut2->transitions, get_cle(it1)))==1)
          meme=false;
          break;
-      if(aut1->transitions->comparer_cle(get_cle(it1),get_cle(it2))==0 && get_valeur(it1)==get_valeur(it2))
+      if(aut1->transitions->comparer_cle(get_cle(it1),get_cle(it2))==0)
 	 it2 = iterateur_suivant_table(it2);
       else{
 	 meme=false;
