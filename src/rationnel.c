@@ -464,16 +464,14 @@ void rec_pos_to_char(Rationnel* rat,char* tab){
 /* retourne un tableau contenant les lettre de l'expression rationnelle, rangée a l'indice de leur position dans l'expression*/
 char* pos_to_char(Rationnel* rat){
 
-	char* tab=malloc(get_position_max(rat)*sizeof(char));
+	char* tab=malloc(get_position_max(rat));
 	rec_pos_to_char(rat,tab);
 	return tab;
 }
 
 Automate *Glushkov(Rationnel *rat)
 {
-
    Automate* aut=creer_automate();
-
    char c;
    int dest;
    char* lettres=pos_to_char(rat);
@@ -512,7 +510,7 @@ Automate *Glushkov(Rationnel *rat)
 
 bool meme_langage (const char *expr1, const char* expr2)
 {
- /*  // Transformation des expressions en automates
+  // Transformation des expressions en automates
    Rationnel *rat1 = expression_to_rationnel(expr1);
    Rationnel *rat2 = expression_to_rationnel(expr2);
    Automate *aut1 = Glushkov(rat1);
@@ -520,26 +518,33 @@ bool meme_langage (const char *expr1, const char* expr2)
    // Minimisation des automates créés
    aut1 = creer_automate_minimal(aut1);
    aut2 = creer_automate_minimal(aut2);
+   
    // Comparaison des automates = comparaison de tous leurs ensembles (etats, alphabet,initiaux, finaux et transitions)
    if(comparer_ensemble(aut1->etats, aut2->etats)!=0 || comparer_ensemble(aut1->alphabet, aut2->alphabet)!=0 ||
-comparer_ensemble(aut1->initiaux, aut2->initiaux)!=0 || comparer_ensemble(aut1->finaux, aut2->finaux)!=0)
+		comparer_ensemble(aut1->initiaux, aut2->initiaux)!=0 || comparer_ensemble(aut1->finaux, aut2->finaux)!=0)
       return false;
+      
    // Comparaison des transitions
    Table_iterateur it1 = premier_iterateur_table(aut1->transitions);
    Table_iterateur it2;
-   bool meme=true;
-   while(iterateur_est_vide(it1)==0){
-      if(iterateur_est_vide(it2=trouver_table(aut2->transitions, get_cle(it1)))==1)
-         meme=false;
-         break;
-      if(aut1->transitions->comparer_cle(get_cle(it1),get_cle(it2))==0 && get_valeur(it1)==get_valeur(it2))
-	 it2 = iterateur_suivant_table(it2);
-      else{
-	 meme=false;
-	 break;
-      }
-   }
-   return meme;*/
+   //Teste si les elements de la table 1 sont dans la table 2
+	while(!iterateur_est_vide(it1)){ 
+		it2=trouver_table(aut2->transitions, get_cle(it1));
+		if(iterateur_est_vide(it2))
+			return false;
+		if(comparer_ensemble((Ensemble*)get_valeur(it1),(Ensemble*)get_valeur(it2))!=0)
+			return false;
+		it1 = iterateur_suivant_table(it1);
+    }
+    it2 = premier_iterateur_table(aut2->transitions);
+    //Teste si les elements de la table 2 sont dans la table 1
+    while(!iterateur_est_vide(it2)){ 
+		if(iterateur_est_vide(it1=trouver_table(aut1->transitions, get_cle(it1)))==1)
+			return false;
+		if(comparer_ensemble((Ensemble*)get_valeur(it1),(Ensemble*)get_valeur(it2))!=0)
+			return false;
+	it1 = iterateur_suivant_table(it1);
+    }
    return NULL;
 }
 
