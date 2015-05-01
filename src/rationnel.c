@@ -439,6 +439,7 @@ Ensemble *suivant(Rationnel *rat, int position)
 void rec_pos_to_char(Rationnel* rat,char* tab){
 	switch (get_etiquette(rat)){
 		case EPSILON :
+			break;
 		case LETTRE :
 			tab[get_position_min(rat)]=get_lettre(rat);
 			return;
@@ -464,7 +465,7 @@ void rec_pos_to_char(Rationnel* rat,char* tab){
 /* retourne un tableau contenant les lettre de l'expression rationnelle, rangée a l'indice de leur position dans l'expression*/
 char* pos_to_char(Rationnel* rat){
 
-	char* tab=malloc(get_position_max(rat));
+	char* tab=malloc(get_position_max(rat)+1);
 	rec_pos_to_char(rat,tab);
 	return tab;
 }
@@ -513,6 +514,8 @@ bool meme_langage (const char *expr1, const char* expr2)
   // Transformation des expressions en automates
    Rationnel *rat1 = expression_to_rationnel(expr1);
    Rationnel *rat2 = expression_to_rationnel(expr2);
+   numeroter_rationnel(rat1);
+   numeroter_rationnel(rat2);
    Automate *aut1 = Glushkov(rat1);
    Automate *aut2 = Glushkov(rat2);
    // Minimisation des automates créés
@@ -539,13 +542,14 @@ bool meme_langage (const char *expr1, const char* expr2)
     it2 = premier_iterateur_table(aut2->transitions);
     //Teste si les elements de la table 2 sont dans la table 1
     while(!iterateur_est_vide(it2)){ 
-		if(iterateur_est_vide(it1=trouver_table(aut1->transitions, get_cle(it1)))==1)
+		it1=trouver_table(aut1->transitions, get_cle(it2));
+		if(iterateur_est_vide(it1))
 			return false;
 		if(comparer_ensemble((Ensemble*)get_valeur(it1),(Ensemble*)get_valeur(it2))!=0)
 			return false;
-	it1 = iterateur_suivant_table(it1);
+		it2 = iterateur_suivant_table(it2);
     }
-   return NULL;
+   return true;
 }
 
 Systeme systeme(Automate *automate)

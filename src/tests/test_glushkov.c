@@ -34,7 +34,6 @@ int test_glushkov(){
        rat = expression_to_rationnel("a.b");
        numeroter_rationnel(rat);
        Automate * automate = Glushkov(rat);
-       
        TEST(
           1
           && le_mot_est_reconnu(automate, "ab")
