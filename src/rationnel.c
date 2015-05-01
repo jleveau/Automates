@@ -545,10 +545,10 @@ comparer_ensemble(aut1->initiaux, aut2->initiaux)!=0 || comparer_ensemble(aut1->
 
 Systeme systeme(Automate *automate)
 {
-   size_t n=taille_ensemble(automate->etats);
+   int n=taille_ensemble(automate->etats);
    Systeme sys=malloc(sizeof(*sys)*n); //Nombre d'etats de l'automate
    for (int i=0;i<n;i++){
-	   sys[i]=malloc(sizeof(*sys[i])*n+1);
+	   sys[i]=malloc(sizeof(*sys[i])*(n+1));
 	   for (int j=0;j<n+1;j++) // +1 pour epsilon
 		   sys[i][j]=NULL;
    }
@@ -562,12 +562,12 @@ Systeme systeme(Automate *automate)
 		Ensemble_iterateur arr_it=premier_iterateur_ensemble(arrive);
 		while (!iterateur_est_vide(arr_it)){
 			int dest=get_element(arr_it);
-			sys[dest][origine]=Lettre(trans);
+			sys[origine][dest]=Lettre(trans);
 			arr_it=iterateur_suivant_ensemble(arr_it);
 		}
 		it=iterateur_suivant_table(it);
    }
-   Ensemble_iterateur it2=premier_iterateur_ensemble(automate->initiaux); //On ajoute les epsilon
+   Ensemble_iterateur it2=premier_iterateur_ensemble(automate->finaux); //On ajoute les epsilon
    while (!iterateur_est_vide(it2)){
 		sys[get_element(it2)][n]=Epsilon();	
 		it2=iterateur_suivant_ensemble(it2);
@@ -597,6 +597,8 @@ void print_systeme(Systeme systeme, int n)
 
 Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 {
+	if (!ligne[numero_variable])
+		return ligne;
    Rationnel* rat=ligne[numero_variable];
    if (rat){
 	   rat=Star(rat);
@@ -604,7 +606,7 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
 		   if (i==numero_variable)
 				ligne[i]=NULL;
 			else if (ligne[i] || i==n){
-				ligne[i]=Union(rat,ligne[i]);
+				ligne[i]=Concat(rat,ligne[i]);
 			}
 	   }
 	}
@@ -614,23 +616,37 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
 Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **valeur_variable, int n)
 {
    Rationnel* rat=ligne[numero_variable];
-   for (int i=0;i<n;i++){
-	   if (i==numero_variable){
-			ligne[n]=Union(ligne[n],Concat(ligne[i],valeur_variable[n]));
-	   }
-	   else if (valeur_variable[i]){
-				ligne[i]=Union(Concat(rat,valeur_variable[i]),ligne[i]); 
-		}
+   ligne[numero_variable]=NULL;
+   for (int i=0;i<n+1;i++){
+		ligne[i]=Union(Concat(rat,valeur_variable[i]),ligne[i]);
    }
    return ligne;
 }
 
 Systeme resoudre_systeme(Systeme systeme, int n)
 {
-   A_FAIRE_RETURN(NULL);
+	for (int i=0;i<n;i++){  //Pour chaque Xi,
+		systeme[i]=resoudre_variable_arden(systeme[i],i,n); // On remplace la ligne i par son arden
+		for (int k=0;k<n;k++){
+			systeme[k]=substituer_variable(systeme[k],i,systeme[i],n); // Et on substitue le Xi par le resultat d'arden
+		}
+	}
+	return systeme;
 }
 
 Rationnel *Arden(Automate *automate)
-{
-   A_FAIRE_RETURN(NULL);
+{   //On crée et on resout le systeme de l'automate
+	Systeme sys=systeme(automate);
+	int n=taille_ensemble(automate->etats);
+	sys=resoudre_systeme(sys,n); 
+	//On fait l'union des expressions correspondant aux états initiaux de l'automate.
+	Rationnel* resultat=NULL;
+	Ensemble_iterateur it_initiaux=premier_iterateur_ensemble(get_initiaux(automate));
+	while (!iterateur_ensemble_est_vide(it_initiaux)){
+		int indice = get_element(it_initiaux); // On recupere l'indice d'un etat initial
+		Rationnel** ligne=sys[indice];
+		resultat=Union(resultat,ligne[n]);
+		it_initiaux=iterateur_suivant_ensemble(it_initiaux);
+	}
+	return resultat;
 }
