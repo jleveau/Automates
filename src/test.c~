@@ -1,10 +1,10 @@
 
-#include "automate.h"
-#include "rationnel.h"
-#include "ensemble.h"
-#include "outils.h"
-#include "parse.h"
-#include "scan.h"
+#include <automate.h>
+#include <rationnel.h>
+#include <ensemble.h>
+#include <outils.h>
+#include <parse.h>
+#include <scan.h>
 
 int main(){
 	Rationnel * rat;

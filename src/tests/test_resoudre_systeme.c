@@ -46,45 +46,7 @@ bool meme_langage_rat ( Rationnel *rat1,  Rationnel *rat2)
     	}
    	return true;
 }
-/*
-int test_arden(){
-	int result=1;
-	 {
-	Rationnel* rat1;
-	Rationnel* rat2;
-	rat1 = expression_to_rationnel("(a.a)*.(b*.c)*");
-	numeroter_rationnel(rat1);
-	Automate * automate1 = Glushkov(rat1);
-	rat2=Arden(automate1);
-	liberer_automate(automate1);
-	TEST(
-          1
-          && meme_langage_rat(rat1,rat2)
-          , result);
-    }
-	{
-	Rationnel* rat1;
-	Rationnel* rat2;
-	rat1 = expression_to_rationnel("(a.a)*.(b+c*).a.b*");
-	numeroter_rationnel(rat1);
-	Automate * automate1 = Glushkov(rat1);
-	rat2=Arden(automate1);
-	liberer_automate(automate1);
-	TEST(
-          1
-          && meme_langage_rat(rat1,rat2)
-          , result);
-    }  
-    return result;
-}
 
-int main(int argc, char *argv[])
-{
-   if( ! test_arden() )
-    return 1; 
-   
-   return 0;
-}*/
 
 int main(int argc, char *argv[]){
 	// Création d'une expression rationnelle
