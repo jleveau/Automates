@@ -18,8 +18,6 @@
  *    along with this Library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file premier.c */ 
-
 #include <automate.h>
 #include <rationnel.h>
 #include <ensemble.h>
@@ -27,13 +25,13 @@
 #include <parse.h>
 #include <scan.h>
 
-int test_premier(){
+int test_dernier(){
 	int result = 1;
     {
        Rationnel * rat;
        rat = expression_to_rationnel("a");
        numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       Ensemble * e = dernier(rat);
        
        TEST(
           1
@@ -48,13 +46,13 @@ int test_premier(){
        Rationnel * rat;
        rat = expression_to_rationnel("a.b");
        numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       Ensemble * e = dernier(rat);
        
        TEST(
           1
           && rat
           && e
-          && est_dans_l_ensemble(e, 1)
+          && est_dans_l_ensemble(e, 2)
           && taille_ensemble( e ) == 1
           , result);
     }
@@ -63,15 +61,14 @@ int test_premier(){
        Rationnel * rat;
        rat = expression_to_rationnel("(a.a)*.(b.c)");
        numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       Ensemble * e = dernier(rat);
        
        TEST(
           1
           && rat
           && e
-          && est_dans_l_ensemble(e, 1)
-          && est_dans_l_ensemble(e, 3)
-          && taille_ensemble( e ) == 2
+          && est_dans_l_ensemble(e, 4)
+          && taille_ensemble( e ) == 1
           , result);
     }
 
@@ -79,16 +76,15 @@ int test_premier(){
        Rationnel * rat;
        rat = expression_to_rationnel("(a.a)*.(b+c)");
        numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       Ensemble * e = dernier(rat);
        
        TEST(
           1
           && rat
           && e
-          && est_dans_l_ensemble(e, 1)
           && est_dans_l_ensemble(e, 3)
           && est_dans_l_ensemble(e, 4)
-          && taille_ensemble( e ) == 3
+          && taille_ensemble( e ) == 2
           , result);
     }
 
@@ -96,17 +92,66 @@ int test_premier(){
        Rationnel * rat;
        rat = expression_to_rationnel("(a.a)*.(b+((c+d.a)*.a)*.e)");
        numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       Ensemble * e = dernier(rat);
+       
+       TEST(
+          1
+          && rat
+          && e
+          && est_dans_l_ensemble(e, 3)
+          && est_dans_l_ensemble(e, 8)
+          && taille_ensemble( e ) == 2
+          , result);
+    }
+
+    {
+       Rationnel * rat;
+       rat = expression_to_rationnel("(b.c).(a.a)*");
+       numeroter_rationnel(rat);
+       Ensemble * e = dernier(rat);
+       
+       TEST(
+          1
+          && rat
+          && e
+          && est_dans_l_ensemble(e, 2)
+          && est_dans_l_ensemble(e, 4)
+          && taille_ensemble( e ) == 2
+          , result);
+    }
+
+    {
+       Rationnel * rat;
+       rat = expression_to_rationnel("(b+c).(a.a)*");
+       numeroter_rationnel(rat);
+       Ensemble * e = dernier(rat);
        
        TEST(
           1
           && rat
           && e
           && est_dans_l_ensemble(e, 1)
+          && est_dans_l_ensemble(e, 2)
+          && est_dans_l_ensemble(e, 4)
+          && taille_ensemble( e ) == 3
+          , result);
+    }
+
+    {
+       Rationnel * rat;
+       rat = expression_to_rationnel("(b+e.(a.(c+d.a)*)*).(a.a)*");
+       numeroter_rationnel(rat);
+       Ensemble * e = dernier(rat);
+
+       TEST(
+          1
+          && rat
+          && e
+          && est_dans_l_ensemble(e, 1)
+          && est_dans_l_ensemble(e, 2)
           && est_dans_l_ensemble(e, 3)
           && est_dans_l_ensemble(e, 4)
-          && est_dans_l_ensemble(e, 5)
-          && est_dans_l_ensemble(e, 7)
+          && est_dans_l_ensemble(e, 6)
           && est_dans_l_ensemble(e, 8)
           && taille_ensemble( e ) == 6
           , result);
@@ -117,7 +162,7 @@ int test_premier(){
 
 int main(int argc, char *argv[])
 {
-   if( ! test_premier() )
+   if( ! test_dernier() )
     return 1; 
    
    return 0;

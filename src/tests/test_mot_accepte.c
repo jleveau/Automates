@@ -2,7 +2,7 @@
  *   Ce fichier fait partie d'un projet de programmation donné en Licence 3 
  *   à l'Université de Bordeaux
  *
- *   Copyright (C) 2015 Giuliana Bianchi, Adrien Boussicault, Thomas Place, Marc Zeitoun
+ *   Copyright (C) 2015 Adrien Boussicault
  *
  *    This Library is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -18,38 +18,37 @@
  *    along with this Library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <rationnel.h>
-#include <ensemble.h>
-#include <outils.h>
-#include <parse.h>
-#include <scan.h>
 
-int test_meme_langage(){
+#include "automate.h"
+#include "outils.h"
+
+
+int test_mot_accepte(){
+
 	int result = 1;
-    {
-       bool test1 = meme_langage("a", "a");
-       bool test2 = meme_langage("a", "b");
-       bool test3 = meme_langage("a.(b.a)*", "(a.b)*.a");
-       
-       TEST(
-          1
-          && test1
-          && ! test2
-          && test3
-          , result
-       );
 
-    }
+	Automate * automate = creer_automate();
 
-    return result;
+	ajouter_transition( automate, 1, 'a', 1 );
+	ajouter_transition( automate, 1, 'b', 2 );
+
+	ajouter_etat_final( automate, 2 );
+	ajouter_etat_initial( automate, 1 );
+
+	TEST( automate && le_mot_est_reconnu( automate, "b" ), result );
+	TEST( automate && le_mot_est_reconnu( automate, "ab" ), result );
+	TEST( automate && le_mot_est_reconnu( automate, "aab" ), result );
+	TEST( automate && ! le_mot_est_reconnu( automate, "aba" ), result );
+
+	liberer_automate( automate );
+
+	return result;
+
 }
 
-int main(int argc, char *argv[])
-{
-   if( ! test_meme_langage() )
-    return 1; 
-   
-   return 0;
+int main(){
+
+	if( ! test_mot_accepte() ){ return 1; }
+
+	return 0;
 }
-
-
