@@ -18,8 +18,6 @@
  *    along with this Library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file premier.c */ 
-
 #include <automate.h>
 #include <rationnel.h>
 #include <ensemble.h>
@@ -27,88 +25,90 @@
 #include <parse.h>
 #include <scan.h>
 
-int test_premier(){
+int test_contient_mot_vide(){
 	int result = 1;
     {
        Rationnel * rat;
        rat = expression_to_rationnel("a");
-       numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
        
        TEST(
           1
           && rat
-          && e
-          && est_dans_l_ensemble(e, 1)
-          && taille_ensemble( e ) == 1
+          && ! contient_mot_vide(rat)
           , result);
     }
 
     {
        Rationnel * rat;
-       rat = expression_to_rationnel("a.b");
-       numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       rat = expression_to_rationnel("a*");
        
        TEST(
           1
           && rat
-          && e
-          && est_dans_l_ensemble(e, 1)
-          && taille_ensemble( e ) == 1
+          && contient_mot_vide(rat)
+          , result);
+    }
+
+    {
+       Rationnel * rat = Epsilon();
+       
+       TEST(
+          1
+          && rat
+          && contient_mot_vide(rat)
+          , result);
+    }
+
+    {
+       Rationnel * rat = Union( Lettre('a'), Epsilon() );
+       
+       TEST(
+          1
+          && rat
+          && contient_mot_vide(rat)
+          , result);
+    }
+
+    {
+       Rationnel * rat = Concat( Lettre('a'), Epsilon() );
+       
+       TEST(
+          1
+          && rat
+          && ! contient_mot_vide(rat)
           , result);
     }
 
     {
        Rationnel * rat;
-       rat = expression_to_rationnel("(a.a)*.(b.c)");
-       numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       rat = expression_to_rationnel("a.(a.(a+b*)+(a+b)*.a)");
        
        TEST(
           1
           && rat
-          && e
-          && est_dans_l_ensemble(e, 1)
-          && est_dans_l_ensemble(e, 3)
-          && taille_ensemble( e ) == 2
+          && ! contient_mot_vide(rat)
           , result);
     }
 
     {
        Rationnel * rat;
-       rat = expression_to_rationnel("(a.a)*.(b+c)");
-       numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       rat = expression_to_rationnel("(a.(a+b*)+(a+b)*.a)");
        
        TEST(
           1
           && rat
-          && e
-          && est_dans_l_ensemble(e, 1)
-          && est_dans_l_ensemble(e, 3)
-          && est_dans_l_ensemble(e, 4)
-          && taille_ensemble( e ) == 3
+          && ! contient_mot_vide(rat)
           , result);
     }
 
     {
        Rationnel * rat;
-       rat = expression_to_rationnel("(a.a)*.(b+((c+d.a)*.a)*.e)");
-       numeroter_rationnel(rat);
-       Ensemble * e = premier(rat);
+       rat = expression_to_rationnel("((a+b*)+(a+b)*.a)");
        
        TEST(
           1
           && rat
-          && e
-          && est_dans_l_ensemble(e, 1)
-          && est_dans_l_ensemble(e, 3)
-          && est_dans_l_ensemble(e, 4)
-          && est_dans_l_ensemble(e, 5)
-          && est_dans_l_ensemble(e, 7)
-          && est_dans_l_ensemble(e, 8)
-          && taille_ensemble( e ) == 6
+          && contient_mot_vide(rat)
           , result);
     }
 
@@ -117,7 +117,7 @@ int test_premier(){
 
 int main(int argc, char *argv[])
 {
-   if( ! test_premier() )
+   if( ! test_contient_mot_vide() )
     return 1; 
    
    return 0;
